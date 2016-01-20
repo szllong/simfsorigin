@@ -136,7 +136,7 @@ static void __nvmm_truncate_blocks(struct inode *inode, loff_t start, loff_t end
 	unsigned long ino;
 	unsigned long vaddr;
 	struct mm_struct *mm;
-	mm = current->mm;
+	mm = &init_mm;
 	ni_info = NVMM_I(inode);
 	vaddr = (unsigned long)ni_info->i_virt_addr;
 	ino = inode->i_ino;
@@ -206,7 +206,7 @@ int nvmm_alloc_blocks(struct inode *inode, int num)
     struct nvmm_sb_info *nsi = NVMM_SB(sb);
     struct page *pg;
     phys_addr_t phys, base, next, cur;
-    mm = current->mm;
+    mm = &init_mm;
     base = nsi->phy_addr;
 	ni_info = NVMM_I(inode);
 	vaddr = (unsigned long)ni_info->i_virt_addr;
@@ -538,11 +538,11 @@ void nvmm_evict_inode(struct inode * inode)
 	invalidate_inode_buffers(inode);
 	clear_inode(inode);
 
+	nvmm_destroy_mapping(inode);
 	if (want_delete) {
 		nvmm_free_inode(inode);
 		sb_end_intwrite(inode->i_sb);
 	}
-	nvmm_destroy_mapping(inode);
 }
 
 

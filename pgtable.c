@@ -45,6 +45,8 @@ inline void nvmm_setup_pud(pud_t *pud, pmd_t *pmd)
 inline pud_t* nvmm_get_pud(struct super_block *sb, u64 ino)
 {
     struct nvmm_inode *ni = nvmm_get_inode(sb, ino);
+	if(0 == ni->i_pg_addr)
+		return 0;
     return (pud_t*)__va(ni->i_pg_addr);
 }
 
@@ -449,7 +451,8 @@ int nvmm_destroy_mapping(struct inode *inode)
 
 	if(!vaddr)
 		return 0;
-	errval = unnvmap(vaddr, pud, &init_mm);
+	if(pud)
+		errval = unnvmap(vaddr, pud, &init_mm);
 	nvfree(ni_info->i_virt_addr);
 	ni_info->i_virt_addr = 0;
 

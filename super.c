@@ -553,6 +553,7 @@ static int nvmm_fill_super(struct super_block *sb, void *data, int silent)
     sb->s_max_links =  NVMM_LINK_MAX;
     sb->s_flags |= MS_NOSEC;
     root_i = nvmm_iget(sb,NVMM_ROOT_INO);
+	NVMM_I(root_i)->i_virt_addr = 0;
     nvmm_make_empty(root_i,root_i);
     if (IS_ERR(root_i)) {
         retval = PTR_ERR(root_i);
